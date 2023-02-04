@@ -3,7 +3,7 @@ import { FireStationData } from "../lib/types"
 import L from "leaflet"
 import { convertGeoPos } from "../lib/utils"
 import useAppStore from "../stores/appStore"
-import { useMemo } from "react"
+import { useCallback, useMemo } from "react"
 
 const iconSize = 30;
 
@@ -30,7 +30,14 @@ export default function StationMarker({ stationData }: { stationData: FireStatio
         });
     }, [isActive])
 
-    const wgs84Pos = convertGeoPos(stationData.geoX, stationData.geoY);
+    const wgs84Pos = useMemo(() => convertGeoPos(stationData.geoX, stationData.geoY), [stationData.geoX, stationData.geoY]);
+
+    const handleClick = useCallback((_ev: any) => {
+        setActiveDistrict(stationData.district);
+        setActiveArea(stationData.regionalStation);
+        setActiveStation(stationData.id);
+        map.panTo(wgs84Pos);
+    }, [setActiveArea, setActiveArea, setActiveStation, stationData.id, wgs84Pos]);
 
     return (
         <Marker
@@ -40,12 +47,7 @@ export default function StationMarker({ stationData }: { stationData: FireStatio
             title={stationData.station}
             position={wgs84Pos}
             eventHandlers={{
-                click: (ev) => {
-                    setActiveDistrict(stationData.district);
-                    setActiveArea(stationData.regionalStation);
-                    setActiveStation(stationData.id);
-                    map.panTo(wgs84Pos);
-                }
+                click: handleClick
             }}
         >
             <Tooltip direction="bottom">

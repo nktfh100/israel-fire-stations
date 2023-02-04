@@ -15,6 +15,7 @@ export default function Map() {
 
     return (
         <MapContainer
+            preferCanvas
             placeholder={<h1>Loading...</h1>}
             scrollWheelZoom={true}
             minZoom={8}
